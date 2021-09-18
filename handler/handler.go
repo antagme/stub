@@ -4,18 +4,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/chobito/n26_test/config"
+	"github.com/antagme/stub/config"
 	"github.com/miekg/dns"
 )
 
 // Handler is the unique and main Handler, responsible for all the received requests
 type Handler struct {
 	client *dns.Client
-	config config.Config
+	config config.DnsConfig
 }
 
 // NewHandler returns a Handler struct responsible for manage DNS the requests
-func NewHandler(client *dns.Client, config config.Config) Handler {
+func NewHandler(client *dns.Client, config config.DnsConfig) Handler {
 	return Handler{
 		client: client,
 		config: config,

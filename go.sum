@@ -1,7 +1,5 @@
 github.com/caarlos0/env/v6 v6.7.1 h1:2r2GyonA8aJX6lDEhwFfpxwAX8Z3mvbE1X6vhaSzEyU=
 github.com/caarlos0/env/v6 v6.7.1/go.mod h1:FE0jGiAnQqtv2TenJ4KTa8+/T2Ss8kdS5s1VEjasoN0=
-github.com/jonathanbeber/burrow v0.0.0-20200204101229-def4f83a369e h1:lavk6vCS2+AViXqPYYr+q+Lbx+tanfLns4chZPmHUeY=
-github.com/jonathanbeber/burrow v0.0.0-20200204101229-def4f83a369e/go.mod h1:MqYG0X5ivyG5wMuj/FfsJs6Nexvk2veTBGZhtOngeqA=
 github.com/matryer/is v1.4.0 h1:sosSmIWwkYITGrxZ25ULNDeKiMNzFSr4V/eqBQP0PeE=
 github.com/matryer/is v1.4.0/go.mod h1:8I/i5uYgLzgsgEloJE1U6xx5HkBQpAZvepWuujKwMRU=
 github.com/miekg/dns v1.1.43 h1:JKfpVSCB84vrAmHzyrsxB5NAr5kLoMXZArPSw7Qlgyg=
