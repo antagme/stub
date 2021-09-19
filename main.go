@@ -1,39 +1,35 @@
 package main
 
 import (
-	"log"
-	"net"
-	"os"
-	"os/signal"
-	"syscall"
-
-	"github.com/antagme/stub/config"
-	"github.com/antagme/stub/handler"
 	"github.com/antagme/stub/server"
-	"github.com/caarlos0/env/v6"
-	"github.com/miekg/dns"
+	"log"
+	"sync"
 )
 
+const defaultServerAddr = "1.1.1.1:853"
+const defaultListenAddr = ":53"
+
 func main() {
-	signalChan := make(chan os.Signal, 1)
-	signal.Notify(signalChan, syscall.SIGTERM)
-	signal.Notify(signalChan, syscall.SIGINT)
+	var waitGroup sync.WaitGroup
 
-	cfg := config.DnsConfig{}
-	err := env.Parse(&cfg)
+	// Start the new server
+	tcp, err := server.NewServer("tcp", defaultListenAddr , defaultServerAddr, waitGroup)
 	if err != nil {
-		log.Fatal("Failed to parse config. Exiting...")
+		log.Println("error starting TCP server")
+		return
 	}
-	c := new(dns.Client)
-	c.Net = "tcp-tls"
-	c.Dialer = &net.Dialer{
-		Timeout: cfg.UpstreamTimeout,
-	}
-	h := handler.NewHandler(c, cfg)
-	server.StartServer(cfg)
-	dns.Handle(".", h)
 
-	sig := <-signalChan
-	log.Printf("Received signal: %q, shutting down..", sig.String())
-	server.ShutdownServers()
+	udp, err := server.NewServer("udp", defaultListenAddr, defaultServerAddr, waitGroup)
+	if err != nil {
+		log.Println("error starting UDP server")
+		return
+	}
+
+	waitGroup.Add(2)
+
+	// Run the servers in goroutines to stop blocking
+	go tcp.Run()
+	go udp.Run()
+
+	waitGroup.Wait()
 }

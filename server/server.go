@@ -1,53 +1,56 @@
 package server
 
 import (
-	"log"
-
-	"github.com/antagme/stub/config"
-	"github.com/miekg/dns"
+	"errors"
+	"net"
+	"strings"
+	"sync"
 )
 
-var serverUdp *dns.Server
-var serverTcp *dns.Server
-
-// StartServer handles the servers initialization based on the DnsConfig Struct Variables
-func StartServer(c config.DnsConfig) {
-	if !c.EnableTCP && !c.EnableUDP {
-		log.Fatal("Neither TCP or UDP server enabled. Exiting...")
-	}
-	if c.EnableTCP {
-		serverTcp = &dns.Server{Addr: ":53", Net: "tcp"}
-		go func() {
-			err := serverTcp.ListenAndServe()
-			if err != nil {
-				log.Panic(err)
-			}
-		}()
-		log.Print("Started TCP server. Listening TCP/53")
-	}
-	if c.EnableUDP {
-		serverUdp = &dns.Server{Addr: ":53", Net: "udp"}
-		go func() {
-			err := serverUdp.ListenAndServe()
-			if err != nil {
-				log.Panic(err)
-			}
-		}()
-		log.Print("Started UDP server. Listening UDP/53")
-	}
+// Server defines the minimum contract our
+// TCP and UDP server implementations must satisfy.
+type Server interface {
+	Run() error
+	Close() error
 }
 
-func ShutdownServers() {
-	shutdownServer(serverTcp)
-	shutdownServer(serverUdp)
+// TCPServer holds the structure of our TCP
+// implementation.
+type TCPServer struct {
+	addr   string
+	server net.Listener
+	externalServer string
+	waitGroup sync.WaitGroup
 }
 
-// ShutdownServers Shutdown the Server gracefully if it is working
-func shutdownServer(s *dns.Server) {
-	if s == nil {
-		return
+// UDPServer holds the necessary structure for our
+// UDP server.
+type UDPServer struct {
+	addr   string
+	server *net.UDPConn
+	externalServer string
+	waitGroup sync.WaitGroup
+}
+
+// NewServer creates a new Server using given protocol
+// and addr.
+func NewServer(protocol, addr string, externalServer string, waitGroup sync.WaitGroup) (Server, error) {
+	switch strings.ToLower(protocol) {
+
+	case "tcp":
+		return &TCPServer{
+			addr: addr,
+			externalServer: externalServer,
+			waitGroup: waitGroup,
+		}, nil
+
+	case "udp":
+		return &UDPServer{
+			addr: addr,
+			externalServer: externalServer,
+			waitGroup: waitGroup,
+		}, nil
 	}
-	if err := s.Shutdown(); err != nil {
-		log.Panicf("Failed to shutdown server %s", s.Net)
-	}
+
+	return nil, errors.New("Invalid protocol given")
 }
