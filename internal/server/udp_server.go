@@ -2,7 +2,7 @@ package server
 
 import (
 	"errors"
-	"github.com/antagme/stub/dns"
+	"github.com/antagme/stub/internal/dns"
 	"log"
 	"net"
 )
@@ -22,6 +22,7 @@ func (u *UDPServer) Run() (err error) {
 	return u.handleConnections()
 }
 
+// handleConnections Read UDP Requests and handle them in separated goroutines
 func (u *UDPServer) handleConnections() error {
 	var err error
 	for {
@@ -41,6 +42,7 @@ func (u *UDPServer) handleConnections() error {
 	return err
 }
 
+// handleConnection Handles a UDP Request, send it to DoT Server, receive the response and send it to the client
 func (u *UDPServer) handleConnection(addr *net.UDPAddr, cmd []byte) {
 	resp, err := dns.DNSUDP(u.externalServer, cmd)
 	if err != nil {

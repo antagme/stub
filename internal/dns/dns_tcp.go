@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+//TCPDNS Send the TCP Request to DoT Provider and obtain the result to proxy to the client
 func TCPDNS(serverAddr string, query []byte) ([]byte, error) {
 	lenDNSPacket := 1024
 

@@ -8,6 +8,7 @@ import (
 	"log"
 )
 
+//DNSUDP Send the UDP Request to DoT Provider and obtain the result to proxy to the client
 func DNSUDP(serverAddr string, query []byte) ([]byte, error) {
 	conn, err := tls.Dial("tcp", serverAddr, &tls.Config{})
 

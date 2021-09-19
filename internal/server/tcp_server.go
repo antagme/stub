@@ -2,13 +2,13 @@ package server
 
 import (
 	"bufio"
-	"github.com/antagme/stub/dns"
+	"github.com/antagme/stub/internal/dns"
 	"log"
 	"net"
 )
 
 
-// Run starts the TCP Server.
+// Run starts the TCP Server and create a new goroutine in every TCP Request
 func (t *TCPServer) Run() (err error) {
 	t.server, err = net.Listen("tcp", t.addr)
 
@@ -35,9 +35,8 @@ func (t *TCPServer) Close() (err error) {
 	return t.server.Close()
 }
 
-// handleConnections is used to accept connections on
-// the TCPServer and handle each of them in separate
-// goroutines.
+// handleConnection is used to accept connections on
+// the TCPServer and handle each of them
 func (t *TCPServer) handleConnection(conn net.Conn) (err error) {
 	defer conn.Close()
 	for {
